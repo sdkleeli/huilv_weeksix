@@ -20,7 +20,7 @@
         android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@+id/showOut"
+        android:id="@+id/show"
         android:textSize="35sp"
         android:gravity="center"
         android:layout_width="match_parent"
@@ -47,5 +47,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onClick"/>
+
+    <Button
+        android:id="@+id/btn_opencfj"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:onClick="openOne"
+        android:text="@string/btn_opencfg_label" />
 
 </LinearLayout>
