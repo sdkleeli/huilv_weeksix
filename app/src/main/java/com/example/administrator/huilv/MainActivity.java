@@ -16,6 +16,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -57,9 +62,16 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         handler = new Handler() {
             public void handlerMessage(Message msg) {
                 if (msg.what == 5) {
-                    String str = (String) msg.obj;
-                    Log.i(TAG, "handlerMessage: getMessage msg = " + str);
-                    show.setText(str);
+                    Bundle bdl = (Bundle) msg.obj;
+                    dollarRate = bdl.getFloat("dollar-rate");
+                    euroRate = bdl.getFloat("euro-rate");
+                    wonRate = bdl.getFloat("won-rate");
+
+                    Log.i(TAG, "handlerMessage: dollarRate:" +dollarRate);
+                    Log.i(TAG, "handlerMessage: euroRate:" +euroRate);
+                    Log.i(TAG, "handlerMessage: wonRate:" +wonRate);
+
+                    Toast.makeText(MainActivity.this,"汇率已更新",Toast.LENGTH_SHORT).show();
                 }
                 super.handleMessage(msg);
             }
@@ -146,32 +158,44 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     @Override
     public void run() {
         Log.i(TAG, "run: run().......");
-        for (int i = 1; i <= 6; i++) {
-            Log.i(TAG, "run: i=" + i);
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        Message msg = handler.obtainMessage(5);
-        //msg.what = 5;
-        msg.obj = "Hello from run()";
-        handler.sendMessage(msg);
-
-        URL url = null;
         try {
-            url = new URL("http://www.usd-cny.com/icbc.htm");
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();
-           InputStream in = http.getInputStream();
-
-            String html = inputStream2String(in);
-            Log.i(TAG, "run: html="+html);
-        } catch (MalformedURLException e) {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+        Bundle bundle = new Bundle();
+
+        Document doc = null;
+        try {
+            doc = Jsoup.connect("http://www.usd-cny.com/bankofchina.htm").get();
+            Log.i(TAG, "run: "+ doc.title());
+            Elements tables = doc.getElementsByTag("table");
+            Element table1 = tables.get(0);
+            Elements tds = table1.getElementsByTag("td");
+            for(int i=0;i<tds.size();i+=6){
+                Element td1 =  tds.get(i);
+                Element td2 =  tds.get(i+5);
+                Log.i(TAG, "run: " +td1.text() + "==>" +td2.text());
+                String str1 = td1.text();
+                String val = td2.text();
+                if("美元".equals(str1)){
+                    bundle.putFloat("dollar-rate",100f/Float.parseFloat(val));
+                } else if("欧元".equals(str1)){
+                    bundle.putFloat("euro-rate",100f/Float.parseFloat(val));
+                } else if("韩元".equals(str1)){
+                    bundle.putFloat("won-rate",100f/Float.parseFloat(val));
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Message msg = handler.obtainMessage(5);
+        //msg.what = 5;
+        //msg.obj = "Hello from run()";
+        msg.obj = bundle;
+        handler.sendMessage(msg);
+
     }
 
     private String inputStream2String(InputStream inputStream) throws IOException {
