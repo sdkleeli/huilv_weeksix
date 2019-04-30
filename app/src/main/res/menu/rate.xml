@@ -5,6 +5,11 @@
     <item
         android:id="@+id/menu_set"
         android:icon="@mipmap/settings"
-        android:title="@string/menu_set_label"
-        app:showAsAction="always" />
+        android:title="Setting"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/open_list"
+        android:icon="@mipmap/settings"
+        android:title="@string/label_open_list"
+        app:showAsAction="never" />
 </menu>
