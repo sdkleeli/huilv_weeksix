@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         if (item.getItemId() == R.id.menu_set) {
             openConfig();
         }else if(item.getItemId()==R.id.open_list){
-            Intent list = new Intent(this, MyListActivity .class);
+            Intent list = new Intent(this, MyList2Activity .class);
             startActivity(list);
         }
         return super.onOptionsItemSelected(item);
