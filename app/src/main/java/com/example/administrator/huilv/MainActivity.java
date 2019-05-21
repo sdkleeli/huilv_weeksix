@@ -31,6 +31,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Runnable {
     private final String TAG = "Rate";
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         rmb = (EditText) findViewById(R.id.rmb);
         show = (TextView) findViewById(R.id.show);
 
+        //获取SP里保存的数据
         SharedPreferences SharedPreferences = getSharedPreferences("myrate", Activity.MODE_PRIVATE);
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         dollarRate = SharedPreferences.getFloat("dollar_rate", 0.0f);
@@ -160,8 +162,20 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         if (item.getItemId() == R.id.menu_set) {
             openConfig();
         }else if(item.getItemId()==R.id.open_list){
-            Intent list = new Intent(this, MyList2Activity .class);
+            Intent list = new Intent(this, RateListActivity .class);
             startActivity(list);
+            /*//测试数据库
+            RateItem item1 = new RateItem("aaaa","123");
+            RateManager manager = new RateManager(this);
+            manager.add(item1);
+            manager.add(new RateItem("bbbb","23.5"));
+            Log.i(TAG, "onOptionsItemSelected: 写入数据完毕");
+
+            //查询所有数据
+            List<RateItem> testList = manager.listAll();
+            for(RateItem i :testList){
+                Log.i(TAG, "onOptionsItemSelected: 取出数据[id="+i.getId()+"]Name=" + i.getCurName() + "Rate= " + i.getCurRate());
+            }*/
         }
         return super.onOptionsItemSelected(item);
     }
